@@ -52,3 +52,17 @@ export async function getFeedById(id: number): Promise<PiFeed | null> {
   const data = await pi("podcasts/byfeedid", { id: String(id) });
   return data.feed && data.feed.id ? toFeed(data.feed) : null;
 }
+
+export type PiPersonEpisode = { feed: string; title: string; date: string; url: string | null };
+
+// search/byperson matches person tags, episode titles and descriptions. Newest first.
+export async function searchByPerson(name: string, max = 60): Promise<PiPersonEpisode[]> {
+  const data = await pi("search/byperson", { q: name, max: String(max) });
+  type Raw = { feedTitle?: string; title?: string; datePublished?: number; link?: string };
+  return ((data.items ?? []) as Raw[])
+    .map((i) => ({
+      feed: i.feedTitle ?? "", title: i.title ?? "", url: i.link || null,
+      date: new Date((i.datePublished ?? 0) * 1000).toISOString(),
+    }))
+    .sort((a, b) => b.date.localeCompare(a.date));
+}

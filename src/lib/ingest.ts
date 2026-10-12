@@ -5,6 +5,7 @@ import { isSameEpisode } from "./match";
 import { decodeEntities } from "./evidence";
 import { parseClockDuration, parseIsoDuration } from "./duration";
 import { getVideos, listUploads } from "./youtube";
+import { refreshVideoStats } from "./stats";
 
 export type Cfg = { clipMaxMinutes: number; titleThreshold: number; windowDays: number };
 export type ShowRow = {
@@ -221,6 +222,7 @@ export async function ingestAll(opts: { youtubeMaxPages?: number; log?: (s: stri
       errors.push(`${show.name}: ${(e as Error).message}`);
     }
   }
+  try { await refreshVideoStats(); } catch (e) { errors.push(`video stats: ${(e as Error).message}`); }
   await c.execute({
     sql: "insert into ingest_runs (started_at, finished_at, per_show, errors) values (?, ?, ?, ?)",
     args: [started, new Date().toISOString(), JSON.stringify(perShow), JSON.stringify(errors)],

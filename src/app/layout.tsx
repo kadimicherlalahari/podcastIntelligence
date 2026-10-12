@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import Link from "next/link";
 import { Nav } from "@/components/nav";
 import { NextBrief } from "@/components/next-brief";
@@ -13,6 +13,14 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// Editorial face for the Overview headline and headline numbers only.
+const serif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +48,7 @@ function Mark() {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} h-full antialiased`}>
       <body className="min-h-full">
         <div className="md:grid md:min-h-screen md:grid-cols-[236px_1fr]">
           <aside className="hidden border-r border-line bg-surface-2 md:sticky md:top-0 md:flex md:h-screen md:flex-col md:px-3 md:py-5">

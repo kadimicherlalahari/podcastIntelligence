@@ -103,3 +103,19 @@ export async function getVideos(ids: string[]): Promise<YtVideo[]> {
   }
   return out;
 }
+
+export type YtStats = { id: string; views: number | null; likes: number | null; comments: number | null };
+
+// videos.list part=statistics: 1 quota unit per call of up to 50 ids.
+export async function getVideoStats(ids: string[]): Promise<YtStats[]> {
+  const num = (v?: string) => (v === undefined ? null : Number(v));
+  const out: YtStats[] = [];
+  for (let i = 0; i < ids.length; i += 50) {
+    const data = await yt("videos", { part: "statistics", id: ids.slice(i, i + 50).join(",") });
+    for (const v of data.items ?? []) {
+      const s = v.statistics ?? {};
+      out.push({ id: v.id, views: num(s.viewCount), likes: num(s.likeCount), comments: num(s.commentCount) });
+    }
+  }
+  return out;
+}
